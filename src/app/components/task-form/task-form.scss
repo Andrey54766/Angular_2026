@@ -1,0 +1,97 @@
+.task-form {
+    max-width: 90vw;
+    margin: 20px auto;
+    padding: 20px;
+    background: #edeeef;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.task-form-control {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #413f3f;
+    }
+
+    input,
+    select {
+        padding: 8px;
+        border: 1px solid #bebcbc;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #0a7cf6;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    }
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #067bf7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:disabled {
+        background-color: #a9a7a7;
+        cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+        background-color: #035dbd;
+    }
+}
+
+
+// Стиль для текстових повідомлень про помилку
+.error {
+    color: #ff4d4d; // Червоний колір тексту
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+// Стиль для самих полів (input та select), коли вони невалідні
+input.ng-invalid.ng-dirty,
+select.ng-invalid.ng-dirty {
+    border: 1px solid #ff4d4d !important; // Червона рамка
+    outline: none;
+    
+    &:focus {
+        box-shadow: 0 0 5px rgba(255, 77, 77, 0.5); // Легке червоне світіння при фокусі
+    }
+}
+
+// Загальні стилі для полів (щоб виглядали охайно)
+.task-form-control {
+    margin-bottom: 15px;
+    
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box; // Щоб padding не розширював поле
+    }
+}

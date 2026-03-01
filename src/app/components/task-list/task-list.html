@@ -1,0 +1,27 @@
+<app-task-form
+  [editTask]="editingTask"
+  (taskAdd)="addTask($event)"
+></app-task-form>
+
+<h2>Список завдань</h2>
+<div class="task-filter">
+  <p>Фільтр за статусом</p>
+
+  <select (change)="onSelected($event)">
+    <option value="all">Всі</option>
+    <option [value]="TaskStatus.TODO">До роботи</option>
+    <option [value]="TaskStatus.IN_PROGRESS">В процесі</option>
+    <option [value]="TaskStatus.DONE">Виконано</option>
+  </select>
+</div>
+
+@for(task of (myTasks | statusFilter: selectedStatus); track task.id; let index = $index) {
+  <app-task-item
+    [task]="task"
+    (taskDeleted)="deleteTask($event)"
+    (taskEdited)="editTask($event)"
+    >
+  </app-task-item>
+} @empty { 
+  <p>Завдання відсутні</p>
+}

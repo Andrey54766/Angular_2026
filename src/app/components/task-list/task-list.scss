@@ -1,0 +1,18 @@
+.task-filter {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+p {
+    margin: 5px;
+}
+
+
+select {
+    width: 40%;
+    cursor: pointer;
+    font-size: 14px;
+}

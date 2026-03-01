@@ -1,0 +1,67 @@
+.task-item {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background: #f9f9f9;
+}
+
+h3 {
+    margin: 0;
+    color: #333;
+}
+
+select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    background: white;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+select:hover {
+    border-color: #888;
+}
+
+select:focus {
+    outline: none;
+    border-color: #555;
+}
+
+option {
+    padding: 5px;
+}
+
+.todo { color: #999; }
+.done { color: green; }
+.in_progress { color: #ffa500; }
+
+button {
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-top: 10px;
+    margin-right: 10px; 
+    transition: background-color 0.2s ease;
+    font-weight: 500;
+}
+
+button.edit {
+    background-color: #2196f3; 
+
+    &:hover {
+        background-color: #1976d2;
+    }
+}
+
+button.delete {
+    background-color: #ff4d4d; 
+
+    &:hover {
+        background-color: #cc0000;
+    }
+}

@@ -1,0 +1,53 @@
+<!-- <p>task-form works!</p> -->
+
+
+<form [formGroup]="taskForm" class="task-form">
+    <div class="task-form-control">
+        <label for="title">Назва</label>
+        <input type="text" id="title" name="title" formControlName="title">
+        @if (taskForm.get('title')?.hasError('required') && taskForm.get('title')?.dirty) {
+            <small class="error">Поле "Назва" обов'язкове для заповнення</small>
+        }
+    </div>
+
+    <div class="task-form-control">
+        <label for="description">Опис</label>
+        <input type="text" id="description" name="description" formControlName="description">
+        @if (taskForm.get('description')?.hasError('forbiddenWord')) {
+            <small class="error">Вводити слова React та Vue заборонено</small>
+        }
+    </div>
+
+    <div class="task-form-control">
+        <label for="dueDate">Дата дедлайну</label>
+        <input type="date" id="dueDate" name="dueDate" formControlName="dueDate">
+        
+        @if (taskForm.get('dueDate')?.hasError('required') && taskForm.get('dueDate')?.dirty) {
+            <small class="error">Поле "Дата дедлайну" обов'язкове для заповнення</small>
+        }
+        
+        @if (taskForm.get('dueDate')?.hasError('dateVal')) {
+            <small class="error">Рік не може бути меншим за поточний</small>
+        }
+    </div>
+    <div class="task-form-control">
+        <label for="assignee">Виконавець</label>
+        <input type="text" id="assignee" name="assignee" formControlName="assignee">
+        @if (taskForm.get('assignee')?.hasError('required') && taskForm.get('assignee')?.dirty) {
+            <small class="error">Поле "Виконавець" обов'язкове для заповнення</small>
+        }
+    </div>
+
+    <div class="task-form-control">
+        <label for="status">Статус</label>
+        <select id="status" name="status" formControlName="status">
+            <option [value]="TaskStatus.TODO">До роботи</option>
+            <option [value]="TaskStatus.IN_PROGRESS">В процесі</option>
+            <option [value]="TaskStatus.DONE">Виконано</option>
+        </select>
+    </div>
+
+    <button (click)="addTask()" type="submit" [disabled]="!taskForm.valid">
+        {{ editTask ? 'Оновити завдання' : 'Додати нове завдання' }}
+    </button>
+</form>
