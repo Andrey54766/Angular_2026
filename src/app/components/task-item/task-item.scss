@@ -2,13 +2,30 @@
     border: 1px solid #ccc;
     padding: 15px;
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     background: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 h3 {
-    margin: 0;
+    margin: 0 0 10px 0;
     color: #333;
+}
+
+// Стилі для кольорового тексту статусу
+.done { 
+    color: #28a745; 
+    font-weight: bold; 
+}
+
+.in-progress { 
+    color: #ffa500; 
+    font-weight: bold; 
+}
+
+.todo { 
+    color: #adb5bd; 
+    font-weight: bold; 
 }
 
 select {
@@ -18,50 +35,33 @@ select {
     cursor: pointer;
     background: white;
     font-size: 14px;
-    transition: all 0.2s ease-in-out;
+    margin-top: 5px;
 }
 
-select:hover {
-    border-color: #888;
+.action-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
 }
-
-select:focus {
-    outline: none;
-    border-color: #555;
-}
-
-option {
-    padding: 5px;
-}
-
-.todo { color: #999; }
-.done { color: green; }
-.in_progress { color: #ffa500; }
 
 button {
     color: white;
     border: none;
-    padding: 5px 12px;
+    padding: 6px 15px;
     cursor: pointer;
-    border-radius: 3px;
-    margin-top: 10px;
-    margin-right: 10px; 
-    transition: background-color 0.2s ease;
+    border-radius: 4px;
     font-weight: 500;
-}
-
-button.edit {
-    background-color: #2196f3; 
+    transition: opacity 0.2s;
 
     &:hover {
-        background-color: #1976d2;
+        opacity: 0.85;
     }
 }
 
-button.delete {
-    background-color: #ff4d4d; 
+.edit {
+    background-color: #007bff; // Синій для "Редагувати"
+}
 
-    &:hover {
-        background-color: #cc0000;
-    }
+.delete {
+    background-color: #dc3545; // Червоний для "Видалити"
 }

@@ -25,9 +25,9 @@ export class TaskItemComponent {
 
   getStatusClasses() {
     return {
-      'status-done': this.task.status === TaskStatus.DONE,
-      'status-progress': this.task.status === TaskStatus.IN_PROGRESS,
-      'status-todo': this.task.status === TaskStatus.TODO
+      'done': this.task.status === TaskStatus.DONE,
+      'in-progress': this.task.status === TaskStatus.IN_PROGRESS,
+      'todo': this.task.status === TaskStatus.TODO
     };
   }
 

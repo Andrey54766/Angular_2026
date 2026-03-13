@@ -95,3 +95,26 @@ select.ng-invalid.ng-dirty {
         box-sizing: border-box; // Щоб padding не розширював поле
     }
 }
+
+
+// Стиль для полів (input та select), коли вони ВАЛІДНІ та змінені
+input.ng-valid.ng-dirty,
+select.ng-valid.ng-dirty {
+    border: 1px solid #28a745 !important; // Зелена рамка
+    outline: none;
+
+    &:focus {
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); // Легке зелене світіння
+    }
+}
+
+// Стиль для полів, коли вони НЕВАЛІДНІ та змінені (у вас він вже є, просто для порівняння)
+input.ng-invalid.ng-dirty,
+select.ng-invalid.ng-dirty {
+    border: 1px solid #ff4d4d !important; // Червона рамка
+    outline: none;
+    
+    &:focus {
+        box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+    }
+}
