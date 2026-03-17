@@ -36,15 +36,11 @@
 
 
 
-// 1. ВИПРАВЛЕНО: 'Inject' з великої літери
-import { Inject, Injectable } from '@angular/core'; 
+import { Inject, Injectable } from '@angular/core';
 import { Task } from '../core/models/task.model';
-import { HttpClient } from '@angular/common/http';
-// 2. ВИПРАВЛЕНО: Додано імпорт Observable, без нього метод не знає, що це таке
-import { Observable } from 'rxjs'; 
-
-// 3. ПЕРЕВІРТЕ ЦЕЙ ШЛЯХ: Якщо у вас папка називається 'config', а не 'share/config',
-// змініть на '../config/config'
+// 1. ДОДАНО: HttpParams в імпорт сюди
+import { HttpClient, HttpParams } from '@angular/common/http'; 
+import { Observable } from 'rxjs';
 import { AppConfig, CONFIG_TOKEN } from '../config/config';
 
 @Injectable({
@@ -54,12 +50,19 @@ export class TaskService {
 
   constructor(
     private http: HttpClient,
-    // Тепер @Inject працюватиме, бо ми імпортували його з великої літери
     @Inject(CONFIG_TOKEN) private config: AppConfig
   ) {}
 
-  getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.config.apiUrl}/v1/tasks`);
+  // Оновлений метод з використанням HttpParams
+  getTasks(status?: string): Observable<Task[]> {
+    let params = new HttpParams();
+
+    // Якщо статус передано, додаємо його до параметрів запиту
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    return this.http.get<Task[]>(`${this.config.apiUrl}/v1/tasks`, { params: params });
   }
 
   createTask(newTask: Task): Observable<Task> {

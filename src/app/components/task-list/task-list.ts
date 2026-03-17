@@ -13,16 +13,16 @@ import { Observable } from 'rxjs';
 })
 export class TaskListComponent implements OnInit {
   myTasks$!: Observable<Task[]>;
-  selectedStatus!: TaskStatus | 'all';
+  selectedStatus: TaskStatus | '' = '';
   editingTask: Task | null = null;
   constructor(private taskService: TaskService) {
   }
   ngOnInit(): void {
     this.myTasks$ = this.taskService.getTasks();
   }
-  loadTasks(): void {
-    this.myTasks$ = this.taskService.getTasks();
-  }
+  loadTasks(status?: string): void {
+  this.myTasks$ = this.taskService.getTasks(status);
+}
   addTask(task: Task): void {
     if (this.editingTask) {
       if (!task.id) return;
@@ -48,8 +48,10 @@ export class TaskListComponent implements OnInit {
     });
   }
   onSelected(event: Event): void {
-    const status = (event.target as HTMLSelectElement).value;
-    this.selectedStatus = status as TaskStatus | 'all';
-  }
+  const status = (event.target as HTMLSelectElement).value;
+  
+  this.selectedStatus = status as TaskStatus | '';
+  this.loadTasks(this.selectedStatus);
+}
   protected readonly TaskStatus = TaskStatus;
 }

@@ -6,11 +6,13 @@
     }
 
     <p><strong>Виконавець:</strong> {{ task.assignee }}</p>
+    <!-- Використовуємо вбудований пайп date для форматування дати -->
     <p><strong>Дата виконання:</strong> {{ task.dueDate | date: 'dd.MM.yyyy' }}</p>
 
     <p>
         <strong>Статус: </strong>
-        <span [ngClass]="getStatusClasses()">{{ task.status }}</span>
+        <!-- ДОДАНО: пайп | taskStatus для перекладу -->
+        <span [ngClass]="getStatusClasses()">{{ task.status | taskStatus }}</span>
     </p>
 
     <div class="select-status">
@@ -22,7 +24,7 @@
     </div>
 
     <div class="action-buttons" style="margin-top: 10px;">
-        <button class="task-item-button edit" (click)= "editTask()">Редагувати</button>
-        <button class="task-item-button delete" (click)= "deleteTask(task.id)">Видалити</button>
+        <button class="task-item-button edit" (click)="editTask()">Редагувати</button>
+        <button class="task-item-button delete" (click)="deleteTask(task.id)">Видалити</button>
     </div>
 </div>

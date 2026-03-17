@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Task } from '../../core/models/task.model';
 import { TaskStatus } from '../../core/models/status.enum';
+// ДОДАНО: імпорт сервісу
+import { TaskService } from '../../services/task'; 
 
 @Component({
   selector: 'app-task-item',
@@ -14,7 +16,9 @@ export class TaskItemComponent {
   @Output() taskEdited: EventEmitter<Task> = new EventEmitter<Task>();
 
   protected readonly TaskStatus = TaskStatus;
-  taskService: any;
+
+  // ВИПРАВЛЕНО: підключаємо сервіс через конструктор
+  constructor(private taskService: TaskService) {}
 
   deleteTask(id: number | undefined): void {
     if (!id) return; 
@@ -34,13 +38,17 @@ export class TaskItemComponent {
   }
 
   updateStatus(event: Event): void {
-  const selectedValue: string = (event.target as HTMLSelectElement).value;
+    const selectedValue = (event.target as HTMLSelectElement).value;
 
-  if (!this.task.id) return;
+    if (!this.task.id) return;
 
-  this.taskService.patchTask(this.task.id, { status: selectedValue as TaskStatus }).subscribe({
-    next: (updatedTask: Task) => this.task.status = updatedTask.status,
-    error: (error: any) => console.error('Помилка оновлення статусу', error),
-  });
+    // Тепер taskService визначений і метод спрацює
+    this.taskService.patchTask(this.task.id, { status: selectedValue as TaskStatus }).subscribe({
+      next: (updatedTask: Task) => {
+        // Оновлюємо статус в самому об'єкті, щоб Angular перемалював текст у спані
+        this.task.status = updatedTask.status;
+      },
+      error: (error: any) => console.error('Помилка оновлення статусу', error),
+    });
   }
 }

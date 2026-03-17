@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const taskMockRoutes = require('./routes/taskMockRoutes');
+const taskMockRoutes = require('./routers/taskMockRoutes');
 
 const {
     parseDateMiddleware,

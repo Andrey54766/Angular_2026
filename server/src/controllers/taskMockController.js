@@ -82,6 +82,17 @@ const deleteTask = (req, res) => {
     } else {
         res.status(404).json({ message: 'Завдання не знайдено' });
     }
+
+    const getTasks = (req, res) => {
+    let filteredTasks = [...tasks];
+
+    if (req.query.status) {
+        filteredTasks = filteredTasks.filter(task => task.status === req.query.status);
+    }
+
+    res.json(filteredTasks);
+}
+
 };
 
 module.exports = { getTasks, createTask, updateTask, patchTask, deleteTask};
