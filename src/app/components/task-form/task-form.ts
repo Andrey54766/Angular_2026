@@ -26,10 +26,7 @@ export class TaskFormComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['editTask'] && this.editTask) {
-      this.taskForm.patchValue({
-        ...this.editTask,
-        dueDate: this.editTask.dueDate.toISOString().split("T")[0]
-      });
+      this.taskForm.patchValue (this.editTask);
     }
   }
 
@@ -38,16 +35,13 @@ export class TaskFormComponent implements OnInit, OnChanges {
 
   addTask(): void {
     if (this.taskForm.valid) {
-      const formValue = this.taskForm.value;
-      
-      let taskData = {
-        ...formValue,
-        dueDate: formValue.dueDate ? new Date(formValue.dueDate) : new Date(),
+   let taskData = {
+        ...this.taskForm.value,
         id: this.editTask ? this.editTask.id : undefined,
       };
       
       this.taskAdd.emit(taskData as Task); 
-      this.taskForm.reset({ status: TaskStatus.TODO }); 
+      this.taskForm.reset(); 
     }
   }
 }
