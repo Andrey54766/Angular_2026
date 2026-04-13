@@ -12,15 +12,14 @@ import { TaskService } from '../../services/task';
 })
 export class TaskItemComponent {
   @Input() task!: Task;
-  @Output() taskDeleted = new EventEmitter<number>();
+  @Output() taskDeleted:EventEmitter<string> = new EventEmitter<string>();
   @Output() taskEdited: EventEmitter<Task> = new EventEmitter<Task>();
 
   protected readonly TaskStatus = TaskStatus;
 
-  // ВИПРАВЛЕНО: підключаємо сервіс через конструктор
   constructor(private taskService: TaskService) {}
 
-  deleteTask(id: number | undefined): void {
+  deleteTask(id: string): void {
     if (!id) return; 
     this.taskDeleted.emit(id);
   }

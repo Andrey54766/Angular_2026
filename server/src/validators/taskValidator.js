@@ -32,13 +32,21 @@ const validateTaskPatch = [
     }
 ];
 
-// 🔹 Впроваджений метод handleValidationErrors (без зайвого повторного require)
 const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
+    
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        
+        const valErrors = Object.values(errors.errors).map(err => err.msg);
+        
+        return res.status(400).json({ 
+            message: "Validation error", 
+            errors: valErrors 
+        });
     }
+    
     next();
 };
+
 
 module.exports = { validateTask, validateTaskPatch, handleValidationErrors };

@@ -41,9 +41,9 @@ export class TaskListComponent implements OnInit {
   editTask(task: Task): void {
     this.editingTask = { ...task };
   }
-  deleteTask(id: number): void {
+  deleteTask(id: string): void {
     this.taskService.deleteTask(id).subscribe({
-      next: () => this.loadTasks(),
+      next: () => this.loadTasks(this.selectedStatus),
       error: error => console.log(error),
     });
   }
