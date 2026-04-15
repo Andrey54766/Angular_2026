@@ -1,46 +1,13 @@
-// import { Injectable } from '@angular/core';
-// import {Task} from '../core/models/task.model'
-// import {tasks} from '../core/moc_data/tasks'
-
-// @Injectable({
-//   providedIn: 'root',
-// })
-// export class TaskService {
-  
-//   private tasks: Task[] = [...tasks];
-
-//   constructor() { }
-
-//   addTask(newTask: Task): void {
-//     const maxId = this.tasks.length > 0 ? Math.max(...this.tasks.map(task => task.id)) : 0;
-//     newTask = {
-//       ...newTask,
-//       id: maxId + 1,
-//     }
-//     this.tasks.push(newTask);
-//   }
-
-//   updateTask(updateTask: Task): void { 
-//     this.tasks = this.tasks.map(t => 
-//       t.id === updateTask.id ? { ...updateTask } : t 
-//     );
-//   }
-
-//   deleteTask(index: number): void {
-//     this.tasks = this.tasks.filter(task => task.id !== index);
-//   }
-
-//   getTasks(): Task[] {
-//     return this.tasks;
-//   }
-
-
-
 import { Inject, Injectable } from '@angular/core';
-import { Task } from '../core/models/task.model';
-// 1. ДОДАНО: HttpParams в імпорт сюди
 import { HttpClient, HttpParams } from '@angular/common/http'; 
 import { Observable } from 'rxjs';
+// 1. ДОДАНО: імпорт оператора map
+import { map } from 'rxjs/operators'; 
+
+import { Task } from '../core/models/task.model';
+// 2. ДОДАНО: імпорт інтерфейсу API та Адаптера (перевір шляхи)
+import { TaskApi } from '../core/api/task-api.model';
+import { TaskAdapter } from '../share/adapters/task.adapter';
 import { AppConfig, CONFIG_TOKEN } from '../config/config';
 
 @Injectable({
@@ -53,29 +20,39 @@ export class TaskService {
     @Inject(CONFIG_TOKEN) private config: AppConfig
   ) {}
 
-  // Оновлений метод з використанням HttpParams
   getTasks(status?: string): Observable<Task[]> {
     let params = new HttpParams();
 
-    // Якщо статус передано, додаємо його до параметрів запиту
     if (status) {
       params = params.set('status', status);
     }
 
-    return this.http.get<Task[]>(`${this.config.apiUrl}/v2/tasks`, { params: params });
+    // Отримуємо масив TaskApi та конвертуємо кожен елемент у Task
+    return this.http.get<TaskApi[]>(`${this.config.apiUrl}/v2/tasks`, { params: params }).pipe(
+      map((tasks: TaskApi[]): Task[] => tasks.map(task => TaskAdapter.fromAPI(task)))
+    );
   }
 
-  createTask(newTask: Omit<Task, "id">): Observable<Task> {
-    return this.http.post<Task>(`${this.config.apiUrl}/v2/tasks`, newTask);
+  createTask(newTask: Task): Observable<Task> {
+    // Конвертуємо Task у формат API перед відправкою
+    return this.http.post<TaskApi>(`${this.config.apiUrl}/v2/tasks`, TaskAdapter.toAPI(newTask)).pipe(
+      map((task: TaskApi): Task => TaskAdapter.fromAPI(task))
+    );
   }
 
   updateTask(id: string, updateTask: Task): Observable<Task> {
-    const { id: _, ...update } = updateTask;
-    return this.http.put<Task>(`${this.config.apiUrl}/v2/tasks/${id}`, update);
+    // Повне оновлення через адаптер
+    return this.http.put<TaskApi>(`${this.config.apiUrl}/v2/tasks/${id}`, TaskAdapter.toAPI(updateTask)).pipe(
+      map((task: TaskApi): Task => TaskAdapter.fromAPI(task))
+    );
   }
 
   patchTask(id: string, updateTask: Partial<Task>): Observable<Task> {
-    return this.http.patch<Task>(`${this.config.apiUrl}/v2/tasks/${id}`, updateTask);
+    const formattedTask = TaskAdapter.toPartialApi(updateTask);
+    // Відправляємо часткові дані на сервер
+    return this.http.patch<TaskApi>(`${this.config.apiUrl}/v2/tasks/${id}`, { ...updateTask, ...formattedTask }).pipe(
+      map((task: TaskApi): Task => TaskAdapter.fromAPI(task))
+    );
   }
 
   deleteTask(id: string): Observable<void> {

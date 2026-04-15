@@ -1,28 +1,36 @@
-<app-task-form
-  [editTask]="editingTask"
-  (taskAdd)="addTask($event)"
-></app-task-form>
+<section class="task-list-container">
+  <div class="task-header">
+    <h2>Список завдань</h2>
+    <button mat-raised-button color="primary" (click)="openDialog()">Додати завдання</button>
+  </div>
 
-<h2>Список завдань</h2>
+  <mat-form-field appearance="outline">
+    <mat-label>Фільтр за статусом</mat-label>
+    <mat-select (selectionChange)="onSelected($event)" [value]="''">
+      <mat-option [value]="''">Всі</mat-option>
+      <mat-option [value]="TaskStatus.TODO">До роботи</mat-option>
+      <mat-option [value]="TaskStatus.IN_PROGRESS">В процесі</mat-option>
+      <mat-option [value]="TaskStatus.DONE">Виконано</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-<div class="task-filter">
-  <p>Фільтр за статусом</p>
+  <div class="task-list">
+    <!-- Отримуємо дані через AsyncPipe -->
+    @if (myTasks$ | async; as data) {
+      
+      @for(task of data; track task.id) {
+        <app-task-item
+          [task]="task"
+          (taskDeleted)="deleteTask($event)"
+          (taskEdited)="editTask($event)"
+        ></app-task-item>
+      } @empty {
+        <p class="empty-msg">Завдання за вказаним фільтром відсутні</p>
+      }
 
-  <select (change)="onSelected($event)">
-    <option [value]="'all'">Всі</option>
-    <option [value]="TaskStatus.TODO">До роботи</option>
-    <option [value]="TaskStatus.IN_PROGRESS">В процесі</option>
-    <option [value]="TaskStatus.DONE">Виконано</option>
-  </select>
-</div>
-
-@for (task of myTasks$ | async; track task.id; let index = $index) {
-  <app-task-item
-    [task]="task"
-    (taskDeleted)="deleteTask($event)"
-    (taskEdited)="editTask($event)"
-  >
-  </app-task-item>
-} @empty {
-  <p>Завдання відсутні</p>
-}
+    } @else {
+      <!-- Поки дані завантажуються -->
+      <p>Завантаження даних...</p>
+    }
+  </div>
+</section>

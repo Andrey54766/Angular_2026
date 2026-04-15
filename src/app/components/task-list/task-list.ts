@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core'; 
 import { Task } from '../../core/models/task.model';
 import { TaskStatus } from '../../core/models/status.enum';
-
-import { TaskService } from '../../services/task';
-import { Observable } from 'rxjs';
+import { TaskStateService } from '../../share/state/task-state';
+import { TaskFormComponent } from '../task-form/task-form'; 
+import { MatDialog } from '@angular/material/dialog'; 
+import { Observable, Subject } from 'rxjs'; 
 
 @Component({
   selector: 'app-task-list',
@@ -11,47 +12,73 @@ import { Observable } from 'rxjs';
   templateUrl: './task-list.html',
   styleUrl: './task-list.scss'
 })
-export class TaskListComponent implements OnInit {
+export class TaskListComponent implements OnInit, OnDestroy {
+  
+  private destroy$ = new Subject<void>();
   myTasks$!: Observable<Task[]>;
+  
   selectedStatus: TaskStatus | '' = '';
   editingTask: Task | null = null;
-  constructor(private taskService: TaskService) {
-  }
+
+  constructor(
+    public taskStateService: TaskStateService,
+    public dialog: MatDialog
+  ) {}
+
   ngOnInit(): void {
-    this.myTasks$ = this.taskService.getTasks();
+    // 1. Пов'язуємо змінну з потоком даних у стейті
+    this.myTasks$ = this.taskStateService.tasks$; 
+    // 2. Ініціюємо перше завантаження даних
+    this.taskStateService.loadTasks(); 
   }
-  loadTasks(status?: string): void {
-  this.myTasks$ = this.taskService.getTasks(status);
-}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  statusChange(task: Task): void {
+    console.log('Статус змінено для завдання:', task.title);
+  }
+
   addTask(task: Task): void {
     if (this.editingTask) {
-      if (!task.id) return;
-      this.taskService.updateTask(task.id, task).subscribe({
-        next: () => this.loadTasks(),
-        error: error => console.log(error),
-      })
+      this.taskStateService.updateTask(task);
       this.editingTask = null;
     } else {
-      this.taskService.createTask(task).subscribe({
-        next: () => this.loadTasks(),
-        error: error => console.log(error),
-      });
+      this.taskStateService.createTask(task);
     }
   }
-  editTask(task: Task): void {
-    this.editingTask = { ...task };
-  }
-  deleteTask(id: string): void {
-    this.taskService.deleteTask(id).subscribe({
-      next: () => this.loadTasks(this.selectedStatus),
-      error: error => console.log(error),
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(TaskFormComponent, {
+      height: '70vh',
+      width: '80vw',
+      // Передаємо поточне завдання для редагування, якщо воно є
+      data: { editTask: this.editingTask } 
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.editingTask = null;
+      this.taskStateService.selectTask(null);
     });
   }
-  onSelected(event: Event): void {
-  const status = (event.target as HTMLSelectElement).value;
-  
-  this.selectedStatus = status as TaskStatus | '';
-  this.loadTasks(this.selectedStatus);
-}
+
+  editTask(task: Task): void {
+    this.editingTask = { ...task };
+    this.taskStateService.selectTask(task); 
+    this.openDialog(); 
+  }
+
+  deleteTask(id: string): void {
+    this.taskStateService.deleteTask(id);
+  }
+
+  onSelected(event: any): void {
+    // Для MatSelect значення знаходиться безпосередньо в event.value
+    this.selectedStatus = event.value;
+    this.taskStateService.loadTasks(this.selectedStatus === '' ? undefined : this.selectedStatus);
+  }
+
   protected readonly TaskStatus = TaskStatus;
 }
