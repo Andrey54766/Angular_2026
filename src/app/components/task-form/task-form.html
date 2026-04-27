@@ -1,53 +1,54 @@
-<!-- <p>task-form works!</p> -->
-
-
 <form [formGroup]="taskForm" class="task-form">
-    <div class="task-form-control">
-        <label for="title">Назва</label>
-        <input type="text" id="title" name="title" formControlName="title">
-        @if (taskForm.get('title')?.hasError('required') && taskForm.get('title')?.dirty) {
-            <small class="error">Поле "Назва" обов'язкове для заповнення</small>
-        }
+    <mat-form-field appearance="outline">
+        <mat-label>Назва</mat-label>
+        <input matInput type="text" id="title" formControlName="title">
+        <mat-error *ngIf="taskForm.get('title')?.hasError('required') &&
+taskForm.get('title')?.dirty">
+            Поле "Назва" обов'язкове для заповнення
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Опис</mat-label>
+        <input matInput type="text" id="description" formControlName="description">
+        <mat-error *ngIf="taskForm.get('description')?.hasError('forbiddenWord')">
+            Вводити слова React та Vue заборонено
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Дата дедлайну</mat-label>
+        <input matInput type="date" id="dueDate" formControlName="dueDate">
+        <mat-error *ngIf="taskForm.get('dueDate')?.hasError('required') &&
+taskForm.get('dueDate')?.dirty">
+            Поле "Дата дедлайну" обов'язкове для заповнення
+        </mat-error>
+        <mat-error *ngIf="taskForm.get('dueDate')?.hasError('dateVal')">
+            Рік не може бути меншим за поточний
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Виконавець</mat-label>
+        <input matInput type="text" id="assignee" formControlName="assignee">
+        <mat-error *ngIf="taskForm.get('assignee')?.hasError('required') &&
+taskForm.get('assignee')?.dirty">
+            Поле "Виконавець" обов'язкове для заповнення
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Статус</mat-label>
+        <mat-select id="status" formControlName="status">
+            <mat-option [value]="TaskStatus.TODO">До роботи</mat-option>
+            <mat-option [value]="TaskStatus.IN_PROGRESS">В процесі</mat-option>
+            <mat-option [value]="TaskStatus.DONE">Виконано</mat-option>
+        </mat-select>
+        <mat-error *ngIf="taskForm.get('status')?.hasError('required') &&
+taskForm.get('status')?.dirty">
+            Поле "Статус" обов'язкове для заповнення
+        </mat-error>
+    </mat-form-field>
+    <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!taskForm.valid" (click)="onSubmit()">
+            {{ editMode ? 'Оновити завдання' : 'Додати нове завдання'}}
+        </button>
+        <button mat-button mat-dialog-close>Скасувати</button>
     </div>
-
-    <div class="task-form-control">
-        <label for="description">Опис</label>
-        <input type="text" id="description" name="description" formControlName="description">
-        @if (taskForm.get('description')?.hasError('forbiddenWord')) {
-            <small class="error">Вводити слова React та Vue заборонено</small>
-        }
-    </div>
-
-    <div class="task-form-control">
-        <label for="dueDate">Дата дедлайну</label>
-        <input type="date" id="dueDate" name="dueDate" formControlName="dueDate">
-        
-        @if (taskForm.get('dueDate')?.hasError('required') && taskForm.get('dueDate')?.dirty) {
-            <small class="error">Поле "Дата дедлайну" обов'язкове для заповнення</small>
-        }
-        
-        @if (taskForm.get('dueDate')?.hasError('dateVal')) {
-            <small class="error">Рік не може бути меншим за поточний</small>
-        }
-    </div>
-    <div class="task-form-control">
-        <label for="assignee">Виконавець</label>
-        <input type="text" id="assignee" name="assignee" formControlName="assignee">
-        @if (taskForm.get('assignee')?.hasError('required') && taskForm.get('assignee')?.dirty) {
-            <small class="error">Поле "Виконавець" обов'язкове для заповнення</small>
-        }
-    </div>
-
-    <div class="task-form-control">
-        <label for="status">Статус</label>
-        <select id="status" name="status" formControlName="status">
-            <option [value]="TaskStatus.TODO">До роботи</option>
-            <option [value]="TaskStatus.IN_PROGRESS">В процесі</option>
-            <option [value]="TaskStatus.DONE">Виконано</option>
-        </select>
-    </div>
-
-    <button (click)="addTask()" type="submit" [disabled]="!taskForm.valid">
-        {{ editTask ? 'Оновити завдання' : 'Додати нове завдання' }}
-    </button>
 </form>

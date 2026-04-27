@@ -4,33 +4,45 @@
     <button mat-raised-button color="primary" (click)="openDialog()">Додати завдання</button>
   </div>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Фільтр за статусом</mat-label>
-    <mat-select (selectionChange)="onSelected($event)" [value]="''">
-      <mat-option [value]="''">Всі</mat-option>
-      <mat-option [value]="TaskStatus.TODO">До роботи</mat-option>
-      <mat-option [value]="TaskStatus.IN_PROGRESS">В процесі</mat-option>
-      <mat-option [value]="TaskStatus.DONE">Виконано</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="filters-container" style="display: flex; gap: 20px; align-items: baseline;">
+    <!-- Фільтр за статусом -->
+    <mat-form-field appearance="outline" style="flex: 1;">
+      <mat-label>Фільтр за статусом</mat-label>
+      <mat-select (selectionChange)="onSelected($event)" [value]="'all'">
+        <mat-option value="all">Всі</mat-option>
+        <mat-option [value]="TaskStatus.TODO">До роботи</mat-option>
+        <mat-option [value]="TaskStatus.IN_PROGRESS">В процесі</mat-option>
+        <mat-option [value]="TaskStatus.DONE">Виконано</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <div class="task-list">
-    <!-- Отримуємо дані через AsyncPipe -->
-    @if (myTasks$ | async; as data) {
-      
-      @for(task of data; track task.id) {
-        <app-task-item
-          [task]="task"
-          (taskDeleted)="deleteTask($event)"
-          (taskEdited)="editTask($event)"
-        ></app-task-item>
-      } @empty {
-        <p class="empty-msg">Завдання за вказаним фільтром відсутні</p>
-      }
-
-    } @else {
-      <!-- Поки дані завантажуються -->
-      <p>Завантаження даних...</p>
-    }
+    <!-- Пошук -->
+    <mat-form-field appearance="outline" style="flex: 2;">
+      <mat-label>Пошук (назва, опис, автор)</mat-label>
+      <!-- ВИПРАВЛЕНО: id="filter" замість if="filter" -->
+      <input matInput type="text" id="filter" [formControl]="filterControl">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
   </div>
+
+  <!-- ЛОГІКА ОЧІКУВАННЯ -->
+  @if (hasLoading) {
+    <div class="spinner-container" style="display: flex; justify-content: center; padding: 50px;">
+      <mat-spinner></mat-spinner>
+    </div>
+  } @else {
+    <div class="task-list">
+      @if (myTasks$ | async; as data) {
+        @for(task of data; track task.id) {
+          <app-task-item
+            [task]="task"
+            (taskDeleted)="deleteTask($event)"
+            (taskEdited)="editTask($event)"
+          ></app-task-item>
+        } @empty {
+          <p class="empty-msg">Завдання за вказаним фільтром відсутні</p>
+        }
+      }
+    </div>
+  }
 </section>

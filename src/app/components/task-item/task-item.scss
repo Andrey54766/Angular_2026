@@ -1,67 +1,100 @@
+// .task-item {
+//     border: 1px solid #ccc;
+//     padding: 15px;
+//     border-radius: 5px;
+//     margin-bottom: 15px;
+//     background: #f9f9f9;
+//     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+// }
+
+// h3 {
+//     margin: 0 0 10px 0;
+//     color: #333;
+// }
+
+// // Стилі для кольорового тексту статусу
+// .done { 
+//     color: #28a745; 
+//     font-weight: bold; 
+// }
+
+// .in-progress { 
+//     color: #ffa500; 
+//     font-weight: bold; 
+// }
+
+// .todo { 
+//     color: #adb5bd; 
+//     font-weight: bold; 
+// }
+
+// select {
+//     padding: 5px;
+//     border: 1px solid #ccc;
+//     border-radius: 3px;
+//     cursor: pointer;
+//     background: white;
+//     font-size: 14px;
+//     margin-top: 5px;
+// }
+
+// .action-buttons {
+//     margin-top: 15px;
+//     display: flex;
+//     gap: 10px;
+// }
+
+// button {
+//     color: white;
+//     border: none;
+//     padding: 6px 15px;
+//     cursor: pointer;
+//     border-radius: 4px;
+//     font-weight: 500;
+//     transition: opacity 0.2s;
+
+//     &:hover {
+//         opacity: 0.85;
+//     }
+// }
+
+// .edit {
+//     background-color: #007bff; // Синій для "Редагувати"
+// }
+
+// .delete {
+//     background-color: #dc3545; // Червоний для "Видалити"
+// }
+
+
 .task-item {
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    background: #f9f9f9;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+    width: 100%;
 
-h3 {
-    margin: 0 0 10px 0;
-    color: #333;
-}
+    mat-card-actions {
+        display: flex;
+        justify-content: flex-start;
+        gap: 0.5rem;
 
-// Стилі для кольорового тексту статусу
-.done { 
-    color: #28a745; 
-    font-weight: bold; 
-}
+        .edit-button {
+            background-color: #0f9ac5;
+            color: white;
+        }
 
-.in-progress { 
-    color: #ffa500; 
-    font-weight: bold; 
-}
-
-.todo { 
-    color: #adb5bd; 
-    font-weight: bold; 
-}
-
-select {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    cursor: pointer;
-    background: white;
-    font-size: 14px;
-    margin-top: 5px;
-}
-
-.action-buttons {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-}
-
-button {
-    color: white;
-    border: none;
-    padding: 6px 15px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: opacity 0.2s;
-
-    &:hover {
-        opacity: 0.85;
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+        }
     }
 }
 
-.edit {
-    background-color: #007bff; // Синій для "Редагувати"
+.todo {
+    color: #999;
 }
 
-.delete {
-    background-color: #dc3545; // Червоний для "Видалити"
+.done {
+    color: green;
+}
+
+.in-progress {
+    color: orange;
 }

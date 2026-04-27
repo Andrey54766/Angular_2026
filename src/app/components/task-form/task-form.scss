@@ -1,12 +1,16 @@
 .task-form {
-    max-width: 90vw;
-    margin: 20px auto;
-    padding: 20px;
-    background: #edeeef;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
 }
+
 
 .task-form-control {
     display: flex;
@@ -71,7 +75,7 @@ input.ng-invalid.ng-dirty,
 select.ng-invalid.ng-dirty {
     border: 1px solid #ff4d4d !important; // Червона рамка
     outline: none;
-    
+
     &:focus {
         box-shadow: 0 0 5px rgba(255, 77, 77, 0.5); // Легке червоне світіння при фокусі
     }
@@ -80,14 +84,15 @@ select.ng-invalid.ng-dirty {
 // Загальні стилі для полів (щоб виглядали охайно)
 .task-form-control {
     margin-bottom: 15px;
-    
+
     label {
         display: block;
         font-weight: bold;
         margin-bottom: 5px;
     }
 
-    input, select {
+    input,
+    select {
         width: 100%;
         padding: 8px;
         border: 1px solid #ccc;
@@ -113,7 +118,7 @@ input.ng-invalid.ng-dirty,
 select.ng-invalid.ng-dirty {
     border: 1px solid #ff4d4d !important; // Червона рамка
     outline: none;
-    
+
     &:focus {
         box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
     }
