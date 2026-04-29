@@ -33,14 +33,15 @@
   } @else {
     <div class="task-list">
       @if (myTasks$ | async; as data) {
-        @for(task of data; track task.id) {
+        @for(task of data; track task.id; let index = $index) {
           <app-task-item
             [task]="task"
             (taskDeleted)="deleteTask($event)"
-            (taskEdited)="editTask($event)"
-          ></app-task-item>
+            (taskEdited)="editTask()"
+          >
+        </app-task-item>
         } @empty {
-          <p class="empty-msg">Завдання за вказаним фільтром відсутні</p>
+          <p>Завдання відсутні</p>
         }
       }
     </div>

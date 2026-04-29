@@ -2,14 +2,14 @@ import { createRequire } from 'module';const require = createRequire(import.meta
 import {
   _getAnimationsState
 } from "./chunk-UL5DFIVX.js";
+import {
+  BidiModule
+} from "./chunk-AHXUPNNW.js";
 import "./chunk-WO2LN5MW.js";
 import {
   NgTemplateOutlet
 } from "./chunk-MRJVHVVE.js";
 import "./chunk-ADKEGWJG.js";
-import {
-  BidiModule
-} from "./chunk-AHXUPNNW.js";
 import {
   ChangeDetectionStrategy,
   Component,

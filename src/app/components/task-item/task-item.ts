@@ -1,10 +1,12 @@
-// 1. ПЕРЕВІРТЕ ІМПОРТ: EventEmitter має бути ТІЛЬКИ з '@angular/core'
 import { Component, Input, Output, EventEmitter } from '@angular/core'; 
-
 import { Task } from '../../core/models/task.model';
 import { TaskStatus } from '../../core/models/status.enum';
-import { TaskStateService } from '../../share/state/task-state';
 import { MatSelectChange } from '@angular/material/select'; 
+
+// ІМПОРТИ NgRx (перевірте шлях до вашого store)
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/app.state';
+import * as TaskActions from '../../store/task/task.actions';
 
 @Component({
   selector: 'app-task-item',
@@ -14,24 +16,26 @@ import { MatSelectChange } from '@angular/material/select';
 })
 export class TaskItemComponent {
   
-  @Input() task!: Task; 
+  @Input() task!: Task; // отримуємо об'єкт завдання
   
-  // 2. ВАЖЛИВО: Переконайтеся, що тут написано <string>, а не просто EventEmitter
-  @Output() taskDeleted = new EventEmitter<string>();
-  @Output() taskEdited = new EventEmitter<Task>();
+  // Змінюємо тип емітера на void згідно з фото
+  @Output() taskEdited: EventEmitter<void> = new EventEmitter<void>();
 
   protected readonly TaskStatus = TaskStatus;
 
-  constructor(private taskStateService: TaskStateService) {}
+  // Інжектимо Store замість сервісу
+  constructor(private store: Store<AppState>) {}
 
   deleteTask(id: string): void {
-    if (!id) return;
-    // 3. Викидаємо подію в батьківський компонент, передаючи йому рядок 'id'
-    this.taskDeleted.emit(id); 
+    // Диспатчимо екшен видалення в Store
+    this.store.dispatch(TaskActions.deleteTask({ id }));
   }
 
   editTask(): void {
-    this.taskEdited.emit(this.task);
+    const id = this.task.id;
+    // Повідомляємо Store, яке завдання обране, та емітимо подію для відкриття діалогу
+    this.store.dispatch(TaskActions.selectTask({ id }));
+    this.taskEdited.emit();
   }
 
   getStatusClasses() {
@@ -44,9 +48,12 @@ export class TaskItemComponent {
 
   updateStatus(event: MatSelectChange) {
     const selectedValue = event.value;
+    const id = this.task.id;
 
-    if (!this.task.id) return;
-
-    this.taskStateService.patchTask(this.task.id, { status: selectedValue as TaskStatus });
+    // Використовуємо patchTask екшен для часткового оновлення статусу
+    this.store.dispatch(TaskActions.patchTask({ 
+      id: id, 
+      changes: { status: selectedValue as TaskStatus } 
+    }));
   }
 }

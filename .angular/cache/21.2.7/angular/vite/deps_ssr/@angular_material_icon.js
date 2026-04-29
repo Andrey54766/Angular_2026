@@ -6,15 +6,15 @@ import {
   DomSanitizer
 } from "./chunk-7IGFZZ2K.js";
 import "./chunk-XWOUJJDL.js";
+import {
+  BidiModule
+} from "./chunk-AHXUPNNW.js";
 import "./chunk-PRMBK2ZU.js";
 import {
   HttpClient
 } from "./chunk-WYLI7LF2.js";
 import "./chunk-MRJVHVVE.js";
 import "./chunk-ADKEGWJG.js";
-import {
-  BidiModule
-} from "./chunk-AHXUPNNW.js";
 import {
   ChangeDetectionStrategy,
   Component,

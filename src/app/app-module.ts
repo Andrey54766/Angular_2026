@@ -1,17 +1,9 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { AppRoutingModule } from './app-routing-module';
-import { App } from './app';
-import { TaskListComponent } from './components/task-list/task-list'; 
-import { TaskItemComponent } from './components/task-item/task-item';
-import { TaskFormComponent } from './components/task-form/task-form';
-import { StatusFilterPipe } from './share/pipes/status-filter-pipe';
 import { provideHttpClient, withInterceptorsFromDi, withFetch } from '@angular/common/http';
-import { TaskStatusPipe } from './share/pipes/task-status-pipe';
 
 // Імпорти Angular Material
 import { MatDialogModule } from '@angular/material/dialog';
@@ -22,8 +14,25 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-// 1. ДОДАНО: Модуль для спінера
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+// NgRx
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
+// Компоненти та інше
+import { AppRoutingModule } from './app-routing-module';
+import { App } from './app';
+import { TaskListComponent } from './components/task-list/task-list'; 
+import { TaskItemComponent } from './components/task-item/task-item';
+import { TaskFormComponent } from './components/task-form/task-form';
+import { StatusFilterPipe } from './share/pipes/status-filter-pipe';
+import { TaskStatusPipe } from './share/pipes/task-status-pipe';
+
+// NgRx файли (перевірте шляхи)
+import { taskReducer } from './store/task/task.reducer';
+import { TaskEffects } from './store/task/task.effects';
 
 @NgModule({
   declarations: [
@@ -37,9 +46,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    CommonModule,         // Потрібно для пайпа async
     AppRoutingModule,
     FormsModule,         
-    ReactiveFormsModule,
+    ReactiveFormsModule,  // Потрібно для [formControl]
+    
+    // Material модулі
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -47,9 +59,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatCardModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MatSnackBarModule,
-    // 2. ДОДАНО СЮДИ
-    MatProgressSpinnerModule 
+
+    // NgRx реєстрація
+    StoreModule.forRoot({ tasks: taskReducer }),
+    EffectsModule.forRoot([TaskEffects]),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
   ],
   providers: [
     provideHttpClient(

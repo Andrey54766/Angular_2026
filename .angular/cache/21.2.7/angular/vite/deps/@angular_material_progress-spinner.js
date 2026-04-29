@@ -1,14 +1,14 @@
 import {
   _getAnimationsState
 } from "./chunk-V25QUJUB.js";
-import {
-  BidiModule
-} from "./chunk-LF22AK4J.js";
 import "./chunk-KT43LBCL.js";
 import {
   NgTemplateOutlet
 } from "./chunk-5JXLWJZI.js";
 import "./chunk-YSQ6SUMF.js";
+import {
+  BidiModule
+} from "./chunk-LF22AK4J.js";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -44,8 +44,8 @@ import {
   ɵɵtemplateRefExtractor,
   ɵɵviewQuery
 } from "./chunk-T6WOCTXP.js";
-import "./chunk-J46EEYGT.js";
 import "./chunk-4YCCEXQQ.js";
+import "./chunk-J46EEYGT.js";
 import "./chunk-U7EDC2PH.js";
 
 // node_modules/@angular/material/fesm2022/progress-spinner.mjs

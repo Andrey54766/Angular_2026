@@ -12,7 +12,10 @@ import {
   createBlockScrollStrategy,
   createGlobalPositionStrategy,
   createOverlayRef
-} from "./chunk-75KSPPSM.js";
+} from "./chunk-R52PW6ZA.js";
+import {
+  CdkScrollable
+} from "./chunk-YHC6522S.js";
 import {
   A11yModule,
   ESCAPE,
@@ -22,31 +25,28 @@ import {
   _IdGenerator,
   _getFocusedElementPierceShadowDom,
   hasModifierKey
-} from "./chunk-RKEZ7D6O.js";
-import {
-  _animationsDisabled
-} from "./chunk-UL5DFIVX.js";
+} from "./chunk-XFZ4KNVQ.js";
 import "./chunk-PDVXKENJ.js";
 import "./chunk-7IGFZZ2K.js";
 import "./chunk-XWOUJJDL.js";
-import "./chunk-PRMBK2ZU.js";
-import "./chunk-WYLI7LF2.js";
 import {
-  CdkScrollable
-} from "./chunk-2P5WPTFT.js";
+  _animationsDisabled
+} from "./chunk-UL5DFIVX.js";
 import "./chunk-KQYFGZWB.js";
+import {
+  BidiModule,
+  Directionality
+} from "./chunk-AHXUPNNW.js";
+import "./chunk-PRMBK2ZU.js";
 import {
   coerceNumberProperty
 } from "./chunk-VAKDPJKM.js";
 import {
   Platform
 } from "./chunk-WO2LN5MW.js";
+import "./chunk-WYLI7LF2.js";
 import "./chunk-MRJVHVVE.js";
 import "./chunk-ADKEGWJG.js";
-import {
-  BidiModule,
-  Directionality
-} from "./chunk-AHXUPNNW.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
