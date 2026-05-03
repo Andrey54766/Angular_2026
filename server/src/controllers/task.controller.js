@@ -2,35 +2,61 @@ const TaskModel = require('../models/task.model');
 
 const getTasks = async (req, res) => {
     try {
-        const query = req.query.status ? { status: req.query.status } : {};
-        const tasks = await TaskModel.find(query).sort({ createdAt: -1 });
-        res.json(tasks);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
+        const filter = req.query.filter?.trim().toLowerCase() || '';
+        const status = req.query.status;
+
+        const searchQuery = filter ? {
+            $or: [
+                { title: { $regex: filter, $options: 'i' } },
+                { description: { $regex: filter, $options: 'i' } },
+                { assignee: { $regex: filter, $options: 'i' } }
+            ]
+        } : {};
+
+        const statusQuery = status ? { status } : {};
+
+        const query = { ...searchQuery, ...statusQuery };
+        const [tasks, total] = await Promise.all([
+            TaskModel.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+            TaskModel.countDocuments(query)
+        ]);
+        res.json({ tasks, total });
+
     } catch (error) {
-        console.error('GET Error:', error); // Дивіться це в терміналі!
-        res.status(500).json({ message: "Error retrieving tasks", error: error.message });
+        console.error('GET Error:', error);
+        res.status(500).json({ message: "Error retrieving tasks", errors: error });
     }
 };
 
 const createTask = async (req, res) => {
     try {
-        // Видаляємо id з фронтенду, щоб Mongo не сварився
         const body = req.body;
         delete body.id;
-
         const newTask = new TaskModel(body);
         await newTask.save();
         res.status(201).json(newTask);
     } catch (error) {
-        console.error('POST Error:', error);
+        if (error.name === "ValidationError") {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: "Validation error", errors });
+        }
         res.status(400).json({ message: "Error creating task", error: error.message });
     }
 };
 
 const updateTask = async (req, res) => {
     try {
-        const updated = await TaskModel.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        if (!updated) return res.status(404).json({ message: "Task not found" });
-        res.json(updated);
+        const updatedTask = await TaskModel.findByIdAndUpdate(
+            req.params.id, 
+            req.body, 
+            { new: true, runValidators: true }
+        );
+        if (!updatedTask) return res.status(404).json({ message: "Task not found" });
+        res.json(updatedTask);
     } catch (error) {
         res.status(400).json({ message: "Error updating task", error: error.message });
     }
@@ -38,21 +64,30 @@ const updateTask = async (req, res) => {
 
 const patchTask = async (req, res) => {
     try {
-        const updated = await TaskModel.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true, runValidators: true });
-        if (!updated) return res.status(404).json({ message: "Task not found" });
-        res.json(updated);
+        const updatedTask = await TaskModel.findByIdAndUpdate(
+            req.params.id, 
+            { $set: req.body }, 
+            { new: true, runValidators: true }
+        );
+        if (!updatedTask) return res.status(404).json({ message: "Task not found" });
+        res.json(updatedTask);
     } catch (error) {
-        res.status(400).json({ message: "Error patching task", error: error.message });
+        res.status(400).json({ message: "Error partially updating task", error: error.message });
     }
 };
 
 const deleteTask = async (req, res) => {
     try {
-        const deleted = await TaskModel.findByIdAndDelete(req.params.id);
-        if (!deleted) return res.status(404).json({ message: "Task not found" });
-        res.json({ message: "Task deleted" });
+        const deletedTask = await TaskModel.findByIdAndDelete(req.params.id);
+
+        if (!deletedTask) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+
+        const total = await TaskModel.countDocuments();
+        res.json({ message: "Task deleted", total });
     } catch (error) {
-        res.status(500).json({ message: "Error deleting task", error: error.message });
+        res.status(500).json({ message: "Error deleting task", errors: error });
     }
 };
 

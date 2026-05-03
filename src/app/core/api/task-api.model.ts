@@ -6,3 +6,8 @@ export interface TaskApi {
   dueDate: string;
   status: string;
 }
+
+export interface TaskLoadApi {
+  tasks: TaskApi[];
+  total: number;
+}

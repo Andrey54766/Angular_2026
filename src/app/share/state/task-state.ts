@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, catchError, finalize, switchMap } from 'rxjs/operators';
-import { Task } from '../../core/models/task.model';
+import { Task, TaskLoad } from '../../core/models/task.model'; // Додано TaskLoad
 import { TaskService } from '../../services/task';
 
 @Injectable({
@@ -9,23 +9,23 @@ import { TaskService } from '../../services/task';
 })
 export class TaskStateService {
   private _tasks$ = new BehaviorSubject<Task[]>([]);
+  private _total$ = new BehaviorSubject<number>(0); // Новий потік для загальної кількості
   private _selectedTask$ = new BehaviorSubject<Task | null>(null);
   private _loading$ = new BehaviorSubject<boolean>(false);
   private _error$ = new BehaviorSubject<string | null>(null);
 
   public readonly tasks$: Observable<Task[]> = this._tasks$.asObservable();
+  public readonly total$: Observable<number> = this._total$.asObservable(); // Публічний доступ до total
   public readonly selectedTask$: Observable<Task | null> = this._selectedTask$.asObservable();
   public readonly loading$: Observable<boolean> = this._loading$.asObservable();
   public readonly error$: Observable<string | null> = this._error$.asObservable();
 
   constructor(@Inject(TaskService) private taskService: TaskService) { }
 
-  // Правильна реалізація очищення помилки
   clearError(): void {
     this._error$.next(null);
   }
 
-  // Допоміжний метод для обробки повідомлень про помилки
   private getErrorMessage(err: any): string {
     if (err.error?.errors) {
       return `${err.error.message}. ${err.error.errors}`;
@@ -33,15 +33,19 @@ export class TaskStateService {
     return err.error?.message || err.message || 'Помилка сервера';
   }
 
-  loadTasks(status?: string): void {
+  // Оновлений метод loadTasks для підтримки TaskLoad
+  loadTasks(page: number = 1, pageSize: number = 5, filterText: string = '', status?: string): void {
     this._loading$.next(true);
     this.clearError();
 
-    this.taskService.getTasks(status)
+    this.taskService.getTasks(page, pageSize, filterText, status)
       .pipe(
-        tap((tasks: Task[]) => this._tasks$.next(tasks)),
+        tap((res: TaskLoad) => {
+          this._tasks$.next(res.tasks);
+          this._total$.next(res.total);
+        }),
         catchError(err => {
-          this._error$.next(this.getErrorMessage(err));
+          this._error$.next(err.error?.message || 'Помилка завантаження');
           return throwError(() => err);
         }),
         finalize(() => this._loading$.next(false))
@@ -56,6 +60,7 @@ export class TaskStateService {
       .pipe(
         switchMap((added: Task) => {
           const current = this._tasks$.getValue();
+          this._total$.next(this._total$.getValue() + 1); // Збільшуємо лічильник
           return of([...current, added]);
         }),
         tap((updatedTasks: Task[]) => this._tasks$.next(updatedTasks)),
@@ -117,6 +122,7 @@ export class TaskStateService {
     this.taskService.deleteTask(id).pipe(
       switchMap(() => {
         const filtered = this._tasks$.getValue().filter(t => t.id !== id);
+        this._total$.next(this._total$.getValue() - 1); // Зменшуємо лічильник
         return of(filtered);
       }),
       tap((updatedList: Task[]) => this._tasks$.next(updatedList)),

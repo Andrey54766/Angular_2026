@@ -37,6 +37,7 @@
     "@angular/ssr": "^21.1.4",
     "@ngrx/effects": "^21.1.0",
     "@ngrx/entity": "^21.1.0",
+    "@ngrx/router-store": "^21.1.0",
     "@ngrx/store": "^21.1.0",
     "@ngrx/store-devtools": "^21.1.0",
     "express": "^5.1.0",

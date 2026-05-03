@@ -4,46 +4,79 @@
     <button mat-raised-button color="primary" (click)="openDialog()">Додати завдання</button>
   </div>
 
-  <div class="filters-container" style="display: flex; gap: 20px; align-items: baseline;">
-    <!-- Фільтр за статусом -->
-    <mat-form-field appearance="outline" style="flex: 1;">
+  <div class="filters-wrapper">
+    <mat-form-field appearance="outline">
       <mat-label>Фільтр за статусом</mat-label>
-      <mat-select (selectionChange)="onSelected($event)" [value]="'all'">
-        <mat-option value="all">Всі</mat-option>
+      <mat-select (selectionChange)="onSelected($event)" [formControl]="statusControl">
+        <mat-option [value]="'all'">Всі</mat-option>
         <mat-option [value]="TaskStatus.TODO">До роботи</mat-option>
         <mat-option [value]="TaskStatus.IN_PROGRESS">В процесі</mat-option>
         <mat-option [value]="TaskStatus.DONE">Виконано</mat-option>
       </mat-select>
     </mat-form-field>
 
-    <!-- Пошук -->
-    <mat-form-field appearance="outline" style="flex: 2;">
+    <mat-form-field appearance="outline">
       <mat-label>Пошук (назва, опис, автор)</mat-label>
-      <!-- ВИПРАВЛЕНО: id="filter" замість if="filter" -->
       <input matInput type="text" id="filter" [formControl]="filterControl">
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
   </div>
 
-  <!-- ЛОГІКА ОЧІКУВАННЯ -->
   @if (hasLoading) {
-    <div class="spinner-container" style="display: flex; justify-content: center; padding: 50px;">
-      <mat-spinner></mat-spinner>
+    <div class="spinner-container">
+      <mat-spinner diameter="50"></mat-spinner>
     </div>
   } @else {
-    <div class="task-list">
-      @if (myTasks$ | async; as data) {
-        @for(task of data; track task.id; let index = $index) {
-          <app-task-item
-            [task]="task"
-            (taskDeleted)="deleteTask($event)"
-            (taskEdited)="editTask()"
-          >
-        </app-task-item>
-        } @empty {
-          <p>Завдання відсутні</p>
-        }
-      }
-    </div>
+    @if (tasks$ | async; as tasks) {
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+        
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef> Назва </th>
+          <td mat-cell *matCellDef="let task"> {{ task.title }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef> Опис </th>
+          <td mat-cell *matCellDef="let task"> {{ task.description }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="assignee">
+          <th mat-header-cell *matHeaderCellDef> Виконавець </th>
+          <td mat-cell *matCellDef="let task"> {{ task.assignee }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="dueDate">
+          <th mat-header-cell *matHeaderCellDef> Дата </th>
+          <td mat-cell *matCellDef="let task"> {{ task.dueDate | date:'dd.MM.yyyy' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Статус </th>
+          <td mat-cell *matCellDef="let task"> 
+            <span [ngClass]="task.status.toLowerCase()">{{ task.status | taskStatus }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Дії </th>
+          <td mat-cell *matCellDef="let task">
+            <button mat-icon-button color="primary" (click)="viewTask(task.id)"><mat-icon>visibility</mat-icon></button>
+            <button mat-icon-button color="accent" (click)="editTask(task.id)"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="deleteTask(task.id)"><mat-icon>delete</mat-icon></button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    } @else {
+      <p class="empty-msg">Завдання не знайдено</p>
+    }
   }
+
+  <mat-paginator #paginator 
+    [pageSize]="5" 
+    [pageSizeOptions]="[1, 5, 10, 25]"
+    [length]="totalTasks$ | async">
+  </mat-paginator>
 </section>

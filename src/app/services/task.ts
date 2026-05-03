@@ -3,8 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'; // Додано для трансформації даних
 
-import { Task } from '../core/models/task.model';
-import { TaskApi } from '../core/api/task-api.model';
+import { Task, TaskLoad } from '../core/models/task.model';
+import { TaskApi, TaskLoadApi } from '../core/api/task-api.model';
 import { TaskAdapter } from '../share/adapters/task.adapter';
 import { AppConfig, CONFIG_TOKEN } from '../config/config';
 
@@ -22,16 +22,18 @@ export class TaskService {
     this.baseUrl = `${this.config.apiUrl}/v2/tasks`;
   }
 
-  getTasks(status?: string): Observable<Task[]> {
-    let params = new HttpParams();
-    if (status && status !== 'all') {
-      params = params.set('status', status);
-    }
-    // Використовуємо адаптер для перетворення масиву з сервера
-    return this.http.get<TaskApi[]>(this.baseUrl, { params }).pipe(
-      map((tasks: TaskApi[]) => tasks.map(task => TaskAdapter.fromAPI(task)))
-    );
-  }
+  getTasks(page: number, pageSize: number, filter?: string, status?: string): Observable<TaskLoad> {
+  let params = new HttpParams()
+    .set('page', page)
+    .set('limit', pageSize);
+
+  if (filter) params = params.set('filter', filter);
+  if (status) params = params.set('status', status);
+
+  return this.http.get<TaskLoadApi>(`${this.config.apiUrl}/v2/tasks`, { params: params }).pipe(
+    map(TaskAdapter.fromLoadAPI)
+  );
+}
 
   createTask(task: Task): Observable<Task> {
     // Конвертуємо Task у TaskApi перед відправкою
@@ -55,7 +57,9 @@ export class TaskService {
     );
   }
 
-  deleteTask(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
-  }
+  deleteTask(id: string): Observable<{ message: string, total: number }> {
+  return this.http.delete<{ message: string, total: number }>(
+    `${this.config.apiUrl}/v2/tasks/${id}`
+  );
+}
 }

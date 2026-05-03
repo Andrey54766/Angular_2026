@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'; 
-import { FormGroup, FormBuilder, Validators } from '@angular/forms'; // Використовуємо FormBuilder
+import { FormGroup, FormBuilder, Validators } from '@angular/forms'; 
 import { Subject, Observable } from 'rxjs'; 
-import { takeUntil } from 'rxjs/operators'; 
+import { takeUntil, filter, take } from 'rxjs/operators'; // Додано filter та take
 import { MatDialogRef } from '@angular/material/dialog'; 
 
 import { Task } from '../../core/models/task.model'; 
@@ -28,15 +28,13 @@ export class TaskFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<AppState>,
-    private fb: FormBuilder, // Впроваджуємо конструктор форм
+    private fb: FormBuilder,
     public dialogRef: MatDialogRef<TaskFormComponent>,
   ) {}
 
   ngOnInit(): void {
-    // Отримуємо потік обраного завдання із Store
     this.selectedTask$ = this.store.select(TaskSelectors.selectSelectedTask);
 
-    // Ініціалізація форми через FormBuilder
     this.taskForm = this.fb.group({
       id: [''],
       title: ['', Validators.required],
@@ -46,7 +44,6 @@ export class TaskFormComponent implements OnInit, OnDestroy {
       status: [TaskStatus.TODO, Validators.required]
     });
 
-    // Підписка на зміни обраного завдання для заповнення форми
     this.selectedTask$.pipe(takeUntil(this.destroy$)).subscribe((task) => {
       if (task) {
         this.taskForm.patchValue(task);
@@ -61,21 +58,29 @@ export class TaskFormComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     if (this.taskForm.valid) {
       if (this.editMode) {
-        // Оновлення через Store
         this.store.dispatch(TaskActions.updateTask({ task: { ...this.taskForm.value } }));
       } else {
-        // Створення через Store
         this.store.dispatch(TaskActions.createTask({ task: { ...this.taskForm.value } }));
       }
-      
-      // Скидаємо вибір у стейті та закриваємо вікно
-      this.store.dispatch(TaskActions.selectTask({ id: null }));
-      this.dialogRef.close();
+      this.store.select(TaskSelectors.selectTaskLoading)
+        .pipe(
+          filter(isLoading => !isLoading), 
+          take(1)
+        )
+        .subscribe(() => {
+          this.store.select(TaskSelectors.selectTaskError)
+            .pipe(take(1))
+            .subscribe(error => {
+              if (!error) {
+                this.dialogRef.close(this.editMode ? 'updated' : 'created');
+                this.store.dispatch(TaskActions.selectTask({ id: null }));
+              }
+            });
+        });
     }
   }
 
   ngOnDestroy() {
-    // При закритті обов'язково очищуємо вибране завдання та відписуємось
     this.store.dispatch(TaskActions.selectTask({ id: null }));
     this.destroy$.next();
     this.destroy$.complete();
